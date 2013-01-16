@@ -1,29 +1,44 @@
 # Buildings
 
-buildingList = ["farm", "logging camp", "quarry", "trade post"]
-
 class Buildings(object):
+    """
+    Class for handling buildings. Constructs them, contains a dictionary
+    of all constructed buildings, a method for displaying them
+    """
     def __init__(self):
         self.ID = 1
-    def building(self, kind, quality):
-        self.kind = kind
-        self.quality = quality
-        self.slots = 2
-        return [kind, quality]
+        self.built = {}
     def construct(self, kind, quality):
+        """
+        Constructor for buidlings
+        """
         if kind in buildingList:
-            built[kind + " " + str(self.ID)] = self.building(kind, quality)
+            self.built[kind + " " + str(self.ID)] = buildingList[kind].copy()
+            self.built[kind + " " + str(self.ID)]["quality"] = quality
             self.ID += 1
+        else:
+            print "That building is not in the list of available buidlings."
+    def displayBuilt(self):
+        """
+        Prints the dictionary of constructed buildings-- built-- in a
+        readable format
+        """
+        for key in sorted(self.built):
+            print key
+            for e in self.built[key]:
+                print e + ":", self.built[key][e]
+            print ""
 
+
+
+buildingList = {
+    #List of all buildings that can be built
+    "farm" : {"quality": 0, "slots" : 8},
+    "logging camp" : {"quality": 1, "slots" : 12},
+    "quarry": {"quality": 1, "slots" : 20},
+    "trade post": {"quality": 1, "slots" : 5}
+    }
+
+
+# Instance of Buidlings
 buildings = Buildings()
-
-built = {}
-
-buildings.construct("farm", 1)
-buildings.construct("farm", 1)
-buildings.construct("farm", 1)
-
-print built['farm 1'.slots]
-
-# farmID : [kind, quality, slots]
-
