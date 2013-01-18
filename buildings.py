@@ -1,5 +1,7 @@
 # Buildings
 
+from villagers import *
+
 class Buildings(object):
     """
     Class for handling buildings. Constructs them, contains a dictionary
@@ -28,17 +30,54 @@ class Buildings(object):
             for e in self.built[key]:
                 print e + ":", self.built[key][e]
             print ""
+    def getSkill(self, building):
+         return buildingList[building]["skill"]
+    def getOuput(self, building):
+        return buildingList[building]["output"]
+
+
+
 
 
 
 buildingList = {
     #List of all buildings that can be built
-    "farm" : {"quality": 0, "slots" : 8},
-    "logging camp" : {"quality": 1, "slots" : 12},
-    "quarry": {"quality": 1, "slots" : 20},
-    "trade post": {"quality": 1, "slots" : 5}
+    "farm" : {
+    "construction" : {"materials" : {"lumber" : 20}, "shifts" : 30},
+    "output" : "food",
+    "quality": 1,
+    "skill" : "farm",
+    "slots" : 8,
+    "assignments" : 0},
+
+
+    "logging camp" : {
+    "construction" : {"materials" : {}, "shifts" : 15},
+    "output" : "lumber",
+    "quality": 1,
+    "skill" : "lumberjack",
+    "slots" : 12,
+    "assignments" : 0},
+
+    "quarry": {
+    "construction" : {"materials" : {"lumber" : 40}, "shifts" : 30},
+    "output" : "stone",
+    "quality": 1,
+    "skill" : "mine",
+    "slots" : 20,
+    "assignments" : 0},
+
+    "trade post": {
+    "construction" : {"materials" : {"lumber" : 30, "stone" : 10}, "shifts" : 30},
+    "quality": 1,
+    "output" : "money",
+    "skill" : "trade",
+    "slots" : 5,
+    "assignments" : 0}
     }
 
+bld = Buildings()
 
-# Instance of Buidlings
-buildings = Buildings()
+
+# add time component for building that varies by who is building it
+# time: 8 would be 8 shifts of work. Consider adding a minimum
