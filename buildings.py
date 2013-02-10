@@ -1,83 +1,53 @@
-# Buildings
+import copy
 
-from villagers import *
+class Building(object):
+    def __init__(self, kind, bldID, quality, materials, shifts, output, sector, skill, slots, assignments):
+        self.kind = kind
+        self.bldID = bldID
+        self.quality = quality
+        self.materials = materials
+        self.shifts = shifts
+        self.output = output
+        self.sector = sector
+        self.skill = skill
+        self.slots = slots
+        self.assignments = assignments
+    def __repr__(self):
+        return self.kind + " " + str(self.bldID)
 
-class Buildings(object):
+
+class BldHandler(object):
     """
-    Class for handling buildings. Constructs them, contains a dictionary
-    of all constructed buildings, a method for displaying them
+    Stores building info, constructed buildings, and function for building them
     """
-    def __init__(self):
-        self.ID = 1
+    def __init__(self, strg):
+        self.strg = strg
         self.built = {}
-    def construct(self, kind, quality):
-        """
-        Constructor for buidlings
-        """
-        if kind in buildingList:
-            self.built[kind + " " + str(self.ID)] = buildingList[kind].copy()
-            self.built[kind + " " + str(self.ID)]["quality"] = quality
-            self.ID += 1
-        else:
-            print "That building is not in the list of available buidlings."
-    def displayBuilt(self):
-        """
-        Prints the dictionary of constructed buildings-- built-- in a
-        readable format
-        """
-        for key in sorted(self.built):
-            print key
-            for e in self.built[key]:
-                print e + ":", self.built[key][e]
-            print ""
-    def getSkill(self, building):
-         return buildingList[building]["skill"]
-    def getOuput(self, building):
-        return buildingList[building]["output"]
+        self.buildingList = {
+            "farm" : Building("farm", 1, 1, {"lumber" : 20}, 30, "food", "agriculture", "farm", 8, 0),
+            "logging camp" : Building("logging camp", 1, 1, {}, 10, "lumber", "logging", "lumberjack", 12, 0),
+            "quarry" : Building("quarry", 1, 1, {"lumber" : 40}, 30, "stone", "mining", "mine", 20, 0),
+            "trade post" : Building("trade post", 1, 1, {"lumber" : 30, "stone" : 10}, 30, "money", "trade", "trade", 30, 0),
+        }
+        self.asgns = {}
+    def construct(self, kind):
+        sufficient = True
+        for material in self.buildingList[str(kind)].materials.iterkeys():
+            if self.strg.storage[str(material)] >= self.buildingList[str(kind)].materials[str(material)]:
+                pass
+            else:
+                sufficient = False
+                print "Not enough pylons"
+        if sufficient == True:
+            self.built[kind + " " + str(self.buildingList[kind].bldID)] = copy.deepcopy(self.buildingList[kind])
+            self.asgns[kind + " " + str(self.buildingList[kind].bldID)] = set()
+            self.buildingList[kind].bldID += 1
+    def multi_construct(self, kind, number):
+        constructed = 0
+        while constructed < number:
+            self.construct(kind)
+            constructed += 1
+        print self.built
 
 
 
-
-
-
-buildingList = {
-    #List of all buildings that can be built
-    "farm" : {
-    "construction" : {"materials" : {"lumber" : 20}, "shifts" : 30},
-    "output" : "food",
-    "quality": 1,
-    "skill" : "farm",
-    "slots" : 8,
-    "assignments" : 0},
-
-
-    "logging camp" : {
-    "construction" : {"materials" : {}, "shifts" : 15},
-    "output" : "lumber",
-    "quality": 1,
-    "skill" : "lumberjack",
-    "slots" : 12,
-    "assignments" : 0},
-
-    "quarry": {
-    "construction" : {"materials" : {"lumber" : 40}, "shifts" : 30},
-    "output" : "stone",
-    "quality": 1,
-    "skill" : "mine",
-    "slots" : 20,
-    "assignments" : 0},
-
-    "trade post": {
-    "construction" : {"materials" : {"lumber" : 30, "stone" : 10}, "shifts" : 30},
-    "quality": 1,
-    "output" : "money",
-    "skill" : "trade",
-    "slots" : 5,
-    "assignments" : 0}
-    }
-
-bld = Buildings()
-
-
-# add time component for building that varies by who is building it
-# time: 8 would be 8 shifts of work. Consider adding a minimum

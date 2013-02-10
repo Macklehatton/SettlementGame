@@ -1,34 +1,65 @@
+from storage import *
 from villagers import *
-from production import *
 from buildings import *
+from production import *
+from assignments import *
+
 
 def main():
     pass
 
-main()
+if __name__ == '__main__':
+    main()
+
+strg = Storage()
+bld = BldHandler(strg)
+vlgr = VlgrHandler()
+asgn = AsgnHandler(bld, vlgr)
+prod = Production(bld, vlgr, strg)
+
+
+class DayInput(object):
+    def __init__(self):
+        startingPop = 20
+        while startingPop > 0:
+            vlgr.generate_adult()
+            startingPop -= 1
+        self.day = 1
+    def pass_day(self):
+        pass
+    def input(self):
+        running = True
+        while running == True:
+            print "Commands: build, assign, auto, end, help, exit"
+            command = raw_input('>>')
+            if command == 'build':
+                bld.multi_construct(raw_input("What kind?\n"), int(raw_input("How many?\n")))
+            elif command == 'oldbuild':
+                bld.construct(raw_input("What kind?\n"))
+            elif command == 'assign':
+                asgn.assign(raw_input("Assign who?\n"),raw_input("Assign to where?\n"))
+            elif command == 'auto':
+                asgn.auto_assign()
+            elif command == 'end':
+                self.day += 1
+                prod.calc_production()
+                print prod.calc_consumption()
+            elif command == 'help':
+                print "help info"
+            elif command == 'exit':
+                running = False
+            else:
+                print "Unknown command"
 
 
 
-vlgr.create("Jed", {"farm": 8, "lumberjack" : 4, "fish" : 2, "carpentry" : 2})
-vlgr.create("Noah", {"farm": 7, "lumberjack" : 3, "fish" : 3})
 
+day = DayInput()
 
+vlgr.display_all()
 
-bld.construct("farm", 1)
-bld.construct("farm", 1)
-bld.construct("farm", 2)
-
-vlgr.assign("Villager 1", "farm 1")
-
-
+day.input()
 
 print bld.built
-
-print vlgr.asgns
-
-#print vlgr.vlgrLst[vlgr.asgns["farm 1 slot 1"]]["skills"]["farm"]
-
-print production.calcProduction()
-
-
-## function to pass the day
+print bld.asgns
+#asgn.get_workplaces()

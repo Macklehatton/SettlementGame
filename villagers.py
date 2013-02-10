@@ -1,82 +1,107 @@
-#Villagers
+from atomic import *
+import random
 
-## Actions: Assign, build
 
-from buildings import *
+atomic = Atomic()
 
-class VillagerHandler(object):
-    """
-    Villager constructor
-    """
+class Villager(object):
+    vlgrID = 1
+    def __init__(self, name, age, sex, skills, sector):
+        self.name = name
+        self.age = age
+        self.sex = sex
+        self.skills = skills
+        self.sector = sector
+        self.vlgrID = "Villager " + str(Villager.vlgrID)
+        self.workplace = ''
+        Villager.vlgrID += 1
+    def __repr__(self):
+        return str(self.name)
+
+
+class VlgrHandler(object):
     def __init__(self):
-        """
-        ID: Used so villagers have their own unique number
-        vlgrLst: Dictionary for storing all the villagers
-        """
-        self.ID = 1
-        self.vlgrLst = {}
-        self.asgns = {}
-
-    def create(self, name, skills):
-        """
-        Adds an entry to vlgrLst with a unique ID
-
-        name: name of the villager (not the ID used in the villagers key)
-        skills: should be dictionary listing all the skills the villager will
-        have
-        """
-        self.vlgrLst["Villager " + str(self.ID)] = {"name" : name, "skills" : skills}
-        self.ID += 1
-
-    def assign(self, villager, building):
-        """
-        Adds the villager to the asgns for that building
-        """
-        if bld.built[building]["assignments"] < bld.built[building]["slots"]:
-            bld.built[building]["assignments"] += 1
-            self.asgns[building] = {"slot " + str(bld.built[building]["assignments"]) : villager}
-            print villager, "assigned to", building
-        else:
-            print "That location is full"
-
-    def getVlgrSkill(self, villager, skill):
-        """
-        Given the ID of the villager and the skill you want to find,
-        returns the villagers value of that skill
-        If the villager does not have that skill returns 0
-        """
-        if skill in vlgr.vlgrLst[villager]["skills"]:
-            return vlgr.vlgrLst[villager]["skills"][skill]
+        self.vlgrList = {}
+        self.population = 0
+    def get_skill(self, villager, skill):
+        if skill in self.vlgrList[villager].skills:
+            return self.vlgrList[villager].skills
         else:
             return 0
-    def getId(self, name):
-        for key in self.vlgrLst.iterkeys():
-            if self.vlgrLst[str(key)]["name"] == name:
-                return key
+    def get_ID(self, name):
+        return self.vlgrList[name].vlgrID
+    def rand_name(self, gender):
+        if gender == 'male':
+            atomic.atomize('italianmalenames')
+            return atomic.name()
         else:
-            raise RuntimeError("Name not found")
+            atomic.atomize('italianfemalenames')
+            return atomic.name()
+    def generate_adult(self):
+        sex = ''
+        if random.random() >= 0.51:
+            sex = 'male'
+        else:
+            sex = 'female'
+        name = self.rand_name(sex).title()
+        skills = {'farm' : 2}
+        roll = random.random()
+        if roll <= 0.90:
+            #farmer background
+            skills = {'farm' : 10, 'lumberjack' : 2}
+            sector = 'agriculture'
+        elif 0.90 < roll <= 0.95:
+            #lumberjack
+            skills['lumberjack'] = 10
+            sector = 'logging'
+        elif 0.95 < roll <= 0.99:
+            #miner
+            skills['mine'] = 10
+            sector = 'mining'
+        elif 0.99 < roll <= 100:
+            #trader
+            skills['trade'] = 10
+            sector = 'trade'
+        self.vlgrList[name] = Villager(name, random.randrange(16, 35), sex, skills, sector)
+        self.population += 1
+    def display_all(self):
+        demographics_male = 0
+        demographics_female = 0
+        sectorAgro = 0
+        sectorLog = 0
+        sectorMine = 0
+        sectorTrade = 0
+        print "Villager List:/n"
+        for person in self.vlgrList:
+            print "Name: " + str(self.vlgrList[person].name)
+            print "Age: " + str(self.vlgrList[person].age)
+            print "Sex: " + str(self.vlgrList[person].sex)
+            print "Skills: " + str(self.vlgrList[person].skills)
+            print ''
+            if self.vlgrList[person].sex == 'male':
+                demographics_male += 1
+            else:
+                demographics_female += 1
+            if self.vlgrList[person].sector == 'agriculture':
+                sectorAgro += 1
+            elif self.vlgrList[person].sector == 'logging':
+                sectorLog += 1
+            elif self.vlgrList[person].sector == 'mining':
+                sectorMine += 1
+            elif self.vlgrList[person].sector == 'trade':
+                sectorTrade += 1
+        print "Demographics:"
+        print "Female: " + str(demographics_female)
+        print "Male: " + str(demographics_male)
+        print ""
+        print "Sectors:"
+        print "Agriculture: " + str(sectorAgro)
+        print "Logging: " + str(sectorLog)
+        print "Mining: " + str(sectorMine)
+        print "Trade: " + str(sectorTrade)
 
-vlgr = VillagerHandler()
 
 
 
-# Finish assignments
-# They still allow one villager to be assigned to two locaitons
-#
-# getAsgns which displays asgns in a readable format
-#
-# Method to get the population, for consumption
-#
-# Create a method for Villagers, get by name, which returns the villager ID
-# given the villager's name
-#
-#
-# Randomly generate a villager
-#
-# Villager backgrounds
-#
-# Military personell (use the same system, any barriers are social),
-# combat skills are a separate list
-#
-# Children
-#
+
+
